@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 import {
   ColumnDef,
@@ -39,19 +39,29 @@ import { Input } from './ui/input'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  data: TData[],
+  page: number,
+  size: number,
+  getData:(pagenumber:number)=>void,
+  pageNumber:number,
+  setPageNumber:Dispatch<SetStateAction<number>>
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  page,
+  size,
+  getData,
+  pageNumber,
+  setPageNumber
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+    pageIndex: page,
+    pageSize: size,
   })
 
   const table = useReactTable({
@@ -71,7 +81,15 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
+    manualPagination:true,
+    initialState: {
+      pagination: {
+        pageIndex: page, //custom initial page index
+        pageSize: size, //custom default page size
+      },
+    },
   })
+
 
   return (
     <>
@@ -173,16 +191,17 @@ export function DataTable<TData, TValue>({
         <Button
           variant='outline'
           size='sm'
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => { getData(pageNumber-1); setPageNumber(pageNumber-1); table.previousPage() } }
+          disabled={ pageNumber==0 }
         >
           Previous
         </Button>
         <Button
           variant='outline'
           size='sm'
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          // onClick={() => table.nextPage()}
+          onClick={() => { getData(pageNumber+1); setPageNumber(pageNumber+1); table.nextPage() } }
+          disabled={ (pageNumber*size)==1 }
         >
           Next
         </Button>

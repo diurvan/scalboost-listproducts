@@ -6,9 +6,11 @@ import { DataTable } from '@/components/data-table'
 
 export default function Page() {
   const [ data, setData ] = useState<any>([])
+  const [ pagenumber, setPageNumber] = useState<number>(0)
 
-  const getData = async()=>{
-    const data_get = await fetchProducts({ page:1, size:20, name:'Ivan', sort:'price' })
+  const getData = async(pagenumber=0)=>{
+    console.log('pagenumber ',pagenumber)
+    const data_get = await fetchProducts({ page:pagenumber, size:5, name:'Ivan', sort:'price' })
     // const data_get = await fetchProducts({ page:1, size:20, sort:'price' })
     
     let data_final = []
@@ -35,7 +37,7 @@ export default function Page() {
         <h1 className='mb-6 text-3xl font-bold'>All Products</h1>
         {
           (!data) ? <h3>Loading...</h3>:
-          <DataTable columns={columns} data={data}  />
+          <DataTable columns={columns} data={data} page={0} size={6} getData={getData} pageNumber={pagenumber} setPageNumber={setPageNumber} />
         }
       </div>
     </section>
