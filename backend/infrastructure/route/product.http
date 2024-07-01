@@ -1,0 +1,19 @@
+@url_api = http://localhost:3301
+
+### CREATE
+POST {{url_api}}/v1/product
+Content-Type: application/json
+
+{
+    "name": "Ivan Tapia",
+    "email" : "ivan.tapia@diurvanconsultores.com",
+    "description": "Ivan Tapia Rivas"
+}
+
+###FindById
+GET {{url_api}}/v1/product/1
+Content-Type: application/json
+
+###FindAll
+GET {{url_api}}/v1/product?page=1&size=5&name=Ivan&order=name
+Content-Type: application/json
